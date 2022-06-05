@@ -1,0 +1,7 @@
+[gd_resource type="MultiMesh" load_steps=2 format=2]
+
+[ext_resource path="res://meshes/hexgrid/Hex.obj" type="ArrayMesh" id=1]
+
+[resource]
+transform_format = 1
+mesh = ExtResource( 1 )

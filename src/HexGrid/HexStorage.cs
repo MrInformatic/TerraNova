@@ -31,9 +31,9 @@ namespace TerraNova.Hexgrid
 
         public IEnumerator<(OffsetCoordinate, T)> GetEnumerator()
         {
-            for (var iX = 0; iX < Width; iX++)
+            for (var iY = 0; iY < Height; iY++)
             {
-                for (var iY = 0; iY < Height; iY++)
+                for (var iX = 0; iX < Width; iX++)
                 {
                     yield return (new OffsetCoordinate(iX, iY), Values[iX, iY]);
                 }

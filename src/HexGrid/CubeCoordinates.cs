@@ -1,7 +1,14 @@
+using Godot;
+using System;
+
 namespace TerraNova.Hexgrid
 {
     public struct CubeCoordinate
     {
+        public static readonly Vector2 TransformX = new Vector2((float)Math.Sin(Math.PI / 3f) * 2, 0f);
+        public static readonly Vector2 TransformZ = new Vector2((float)-Math.Sin(Math.PI / 3f), -1.5f);
+        public static readonly Vector2 SizeScaler = new Vector2((float)Math.Sin(Math.PI / 3f) * 2, -1.5f);
+
         public int X { get; private set; }
         public int Y { get; private set; }
         public int Z { get; private set; }
@@ -15,6 +22,14 @@ namespace TerraNova.Hexgrid
                     Col = X - Z / 2,
                     Row = Z,
                 };
+            }
+        }
+
+        public Vector2 WorldCoordinates
+        {
+            get
+            {
+                return TransformX * X + TransformZ * Z;
             }
         }
 

@@ -1,19 +1,24 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/HexGrid/HexGrid.cs" type="Script" id=1]
-[ext_resource path="res://src/HexGrid/HexGridMultiMeshRenderer.cs" type="Script" id=2]
-[ext_resource path="res://meshes/hexgrid/HexGrid.tres" type="MultiMesh" id=3]
+[ext_resource path="res://meshes/hexgrid/Hex.obj" type="ArrayMesh" id=2]
+[ext_resource path="res://src/HexGrid/Generator/GausianNoiseMapGenerator.cs" type="Script" id=4]
+
+[sub_resource type="Resource" id=1]
+script = ExtResource( 4 )
+BaseWidth = 16
+BaseHeight = 16
+LevelCount = 4
+HeightMultipier = 10.0
 
 [node name="Game" type="Node"]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 10, 10 )
+transform = Transform( 1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 10, 5 )
 
 [node name="HexGrid" type="Spatial" parent="."]
 script = ExtResource( 1 )
-Width = 10
-Height = 10
-
-[node name="MultiMeshInstance" type="MultiMeshInstance" parent="HexGrid"]
-multimesh = ExtResource( 3 )
-script = ExtResource( 2 )
+Width = 256
+Height = 256
+MapGenerator = SubResource( 1 )
+TileMesh = ExtResource( 2 )

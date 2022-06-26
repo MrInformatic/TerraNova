@@ -1,18 +1,9 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://meshes/hexgrid/Hex.obj" type="ArrayMesh" id=1]
-
-[sub_resource type="ConvexPolygonShape" id=1]
-points = PoolVector3Array( 0.866025, 0.5, 0.5, 0, 0.5, 1, 0.866025, -0.5, 0.5, 0.866025, 0.5, -0.5, 0, -0.5, 1, -0.866025, 0.5, 0.5, 0.866025, -0.5, -0.5, 0, 0.5, -1, -0.866025, -0.5, 0.5, -0.866025, 0.5, -0.5, 0, -0.5, -1, -0.866025, -0.5, -0.5 )
 
 [node name="Spatial" type="Spatial"]
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 mesh = ExtResource( 1 )
 material/0 = null
-
-[node name="StaticBody" type="StaticBody" parent="."]
-visible = false
-
-[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
-shape = SubResource( 1 )

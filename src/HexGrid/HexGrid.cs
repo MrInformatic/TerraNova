@@ -2,11 +2,15 @@ using Godot;
 using System;
 using TerraNova.Hexgrid.Generator;
 using TerraNova.Utils;
+using TerraNova.Loading;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
 
 namespace TerraNova.Hexgrid
 {
-    public class HexGrid : Spatial
+    public class HexGrid : Spatial, IProgressProvider
     {
         public class Tile
         {
@@ -27,31 +31,63 @@ namespace TerraNova.Hexgrid
 
         public HexStorage<Tile> Map { get; set; }
 
-        [Export] public Mesh TileMesh;
-
-        public override void _Ready()
+        public double Progress
         {
+            get
+            {
+                return (double)LoadedTiles / (double)this.Map.Count;
+            }
+        }
+        private int LoadedTiles = 0;
+
+        public bool IsFinished { get; private set; } = false;
+
+        [Export] public Mesh TileMesh { get; set; }
+        [Export] public PackedScene TileScene { get; set; }
+
+        private SemaphoreSlim UpdateLock { get; } = new SemaphoreSlim(1, 1);
+
+        public override async void _Ready()
+        {
+            if (this.TryGetParrentOfType<GameState>(out var pGameState))
+            {
+                pGameState.ProgressProvider.Register(this);
+            }
+
             Map = MapGenerator.GenerateMap(Width, Height);
 
-            UpdateTiles();
+            await UpdateTiles();
         }
 
-        public void UpdateTiles()
+        public async Task UpdateTiles()
         {
-            foreach (var (xCoordinate, pTile) in Map)
-            {
-                var xCubeCoordinate = xCoordinate.CubeCoordinate;
-                var xWorldCoordinates = xCubeCoordinate.WorldCoordinates;
+            await UpdateLock.WaitAsync();
 
-                if (pTile.Instance == null)
+            this.IsFinished = false;
+            this.LoadedTiles = 0;
+
+            var pTaskFactory = new TaskFactory(GodotTaskScheduler.Current);
+
+            await pTaskFactory.StartNew(() =>
                 {
-                    var pInstance = VisualServer.InstanceCreate2(new RID(TileMesh), GetWorld().Scenario);
+                    foreach (var (xCoordinate, pTile) in Map)
+                    {
+                        var xCubeCoordinate = xCoordinate.CubeCoordinate;
+                        var xWorldCoordinates = xCubeCoordinate.WorldCoordinates;
 
-                    pTile.Instance = pInstance;
-                }
+                        var pTileNode = TileScene.Instance<Spatial>();
 
-                VisualServer.InstanceSetTransform(pTile.Instance, new Transform(Basis.Identity, new Vector3(xWorldCoordinates.x, pTile.Height * 0.1f, xWorldCoordinates.y)));
-            }
+                        pTileNode.Translation = new Vector3(xWorldCoordinates.x, pTile.Height * 0.1f, xWorldCoordinates.y);
+
+                        CallDeferred("add_child", pTileNode);
+
+                        Interlocked.Increment(ref LoadedTiles);
+                    }
+                });
+
+            this.IsFinished = true;
+
+            UpdateLock.Release();
         }
     }
 }

@@ -72,7 +72,7 @@ namespace TerraNova.Hexgrid.Generator
             var CoordinateMultiplier = (float)Math.Pow(2, iLevel);
             var LevelMultiplier = 1f / CoordinateMultiplier;
 
-            var xScaledPosition = xPosition * CoordinateMultiplier;
+            var xScaledPosition = xPosition * CoordinateMultiplier * new Vector2(BaseWidth, BaseHeight);
 
             var iLeft = IntFract((int)Math.Floor(xScaledPosition.x), BaseWidth);
             var iRight = IntFract((int)Math.Ceiling(xScaledPosition.x), BaseWidth);

@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://src/HexGrid/HexGrid.cs" type="Script" id=1]
+[ext_resource path="res://src/HexGrids/HexGridView.cs" type="Script" id=1]
 [ext_resource path="res://meshes/hexgrid/Hex.obj" type="ArrayMesh" id=2]
 [ext_resource path="res://scenes/Tile.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/HexGrid/Generator/GausianNoiseMapGenerator.cs" type="Script" id=4]
+[ext_resource path="res://src/HexGrids/Generators/GausianNoiseMapGenerator.cs" type="Script" id=4]
 [ext_resource path="res://src/GameState.cs" type="Script" id=5]
 [ext_resource path="res://src/Gui/LoadingGui.cs" type="Script" id=6]
 [ext_resource path="res://src/Gui/GameGui.cs" type="Script" id=7]

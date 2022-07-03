@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TerraNova.HexGrids.Coordinates;
 
-namespace TerraNova.Hexgrid
+namespace TerraNova.HexGrids
 {
     public class HexStorage<T> : IEnumerable<(OffsetCoordinate, T)>
     {

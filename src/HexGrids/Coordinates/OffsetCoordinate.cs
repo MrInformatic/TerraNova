@@ -1,4 +1,4 @@
-namespace TerraNova.Hexgrid
+namespace TerraNova.HexGrids.Coordinates
 {
     public struct OffsetCoordinate
     {

@@ -2,8 +2,10 @@ using Godot;
 using Godot.Collections;
 using System.Text.RegularExpressions;
 using System;
+using TerraNova.HexGrids.Tiles;
+using TerraNova.HexGrids.Coordinates;
 
-namespace TerraNova.Hexgrid.Generator
+namespace TerraNova.HexGrids.Generators
 {
     public class GausianNoiseMapGenerator : MapGenerator
     {
@@ -24,7 +26,7 @@ namespace TerraNova.Hexgrid.Generator
 
         private float[,] BaseNoise;
 
-        public override HexStorage<HexGrid.Tile> GenerateMap(int iWidth, int iHeight)
+        public override HexStorage<Tile> GenerateMap(int iWidth, int iHeight)
         {
             if (BaseNoise == null || BaseNoise.GetLength(0) != BaseWidth || BaseNoise.GetLength(1) != BaseHeight)
             {
@@ -39,14 +41,14 @@ namespace TerraNova.Hexgrid.Generator
                 }
             }
 
-            var pMap = new HexStorage<HexGrid.Tile>(iWidth, iHeight);
+            var pMap = new HexStorage<Tile>(iWidth, iHeight);
             var NoiseScale = new Vector2(iWidth, iHeight) * CubeCoordinate.SizeScaler;
 
             foreach (var (xCoordinate, _) in pMap)
             {
                 var xCubeCoordinate = xCoordinate.CubeCoordinate;
 
-                pMap[xCoordinate] = new HexGrid.Tile()
+                pMap[xCoordinate] = new Tile()
                 {
                     Height = (int)(HeightMultipier * Sample(xCubeCoordinate.WorldCoordinates / NoiseScale)),
                 };

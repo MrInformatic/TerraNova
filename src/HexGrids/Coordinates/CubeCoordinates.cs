@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace TerraNova.Hexgrid
+namespace TerraNova.HexGrids.Coordinates
 {
     public struct CubeCoordinate
     {

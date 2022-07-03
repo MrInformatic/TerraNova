@@ -1,6 +1,7 @@
 using Godot;
 using System;
-using TerraNova.Hexgrid.Generator;
+using TerraNova.HexGrids.Generators;
+using TerraNova.HexGrids.Tiles;
 using TerraNova.Utils;
 using TerraNova.Loading;
 using System.Collections.Generic;
@@ -8,16 +9,10 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
 
-namespace TerraNova.Hexgrid
+namespace TerraNova.HexGrids
 {
-    public class HexGrid : Spatial, IProgressProvider
+    public class HexGridView : Spatial, IProgressProvider
     {
-        public class Tile
-        {
-            public int Height { get; set; }
-            public RID Instance { get; set; }
-        }
-
         public static readonly Basis TileTransform = new Basis()
         {
             Row0 = new Vector3((float)Math.Sin(Math.PI / 3f) * 2, (float)-Math.Sin(Math.PI / 3f), 0f),
@@ -28,14 +23,13 @@ namespace TerraNova.Hexgrid
         [Export] public int Width { get; set; }
         [Export] public int Height { get; set; }
         [Export] public MapGenerator MapGenerator { get; set; }
-
-        public HexStorage<Tile> Map { get; set; }
+        public HexGrid HexGrid { get; private set; }
 
         public double Progress
         {
             get
             {
-                return (double)LoadedTiles / (double)this.Map.Count;
+                return HexGrid != null ? (double)LoadedTiles / (double)HexGrid.Map.Count : 0.0;
             }
         }
         private int LoadedTiles = 0;
@@ -54,7 +48,10 @@ namespace TerraNova.Hexgrid
                 pGameState.ProgressProvider.Register(this);
             }
 
-            Map = MapGenerator.GenerateMap(Width, Height);
+            this.HexGrid = new HexGrid()
+            {
+                Map = MapGenerator.GenerateMap(Width, Height)
+            };
 
             await UpdateTiles();
         }
@@ -70,14 +67,13 @@ namespace TerraNova.Hexgrid
 
             await pTaskFactory.StartNew(() =>
                 {
-                    foreach (var (xCoordinate, pTile) in Map)
+                    foreach (var (xCoordinate, pTile) in this.HexGrid.Map)
                     {
-                        var xCubeCoordinate = xCoordinate.CubeCoordinate;
-                        var xWorldCoordinates = xCubeCoordinate.WorldCoordinates;
+                        var pTileNode = TileScene.Instance<TileView>();
 
-                        var pTileNode = TileScene.Instance<Spatial>();
-
-                        pTileNode.Translation = new Vector3(xWorldCoordinates.x, pTile.Height * 0.1f, xWorldCoordinates.y);
+                        pTileNode.Tile = pTile;
+                        pTileNode.Coordinate = xCoordinate.CubeCoordinate;
+                        pTileNode.UpdateView();
 
                         CallDeferred("add_child", pTileNode);
 

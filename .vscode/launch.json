@@ -19,7 +19,7 @@
             "executable": "/run/media/philipp/Datengrab/philipp/Programme/Godot_v3.4.4-stable_mono_x11_64/Godot_v3.4.4-stable_mono_x11.64",
             "executableArguments": [
                 "--path",
-                "${workspaceRoot}"
+                "${workspaceRoot}/TerraNova.Godot"
             ]
         },
         {
@@ -31,7 +31,7 @@
             "executable": "/run/media/philipp/Datengrab/philipp/Programme/Godot_v3.4.4-stable_mono_x11_64/Godot_v3.4.4-stable_mono_x11.64",
             "executableArguments": [
                 "--path",
-                "${workspaceRoot}",
+                "${workspaceRoot}/TerraNova.Godot",
                 "${command:SelectLaunchScene}"
             ]
         },

@@ -1,0 +1,8 @@
+/run/media/philipp/Datengrab/philipp/workspace/Godot/TerraNova/TerraNova.Common/obj/Debug/net472/TerraNova.Common.GeneratedMSBuildEditorConfig.editorconfig
+/run/media/philipp/Datengrab/philipp/workspace/Godot/TerraNova/TerraNova.Common/obj/Debug/net472/TerraNova.Common.AssemblyInfoInputs.cache
+/run/media/philipp/Datengrab/philipp/workspace/Godot/TerraNova/TerraNova.Common/obj/Debug/net472/TerraNova.Common.AssemblyInfo.cs
+/run/media/philipp/Datengrab/philipp/workspace/Godot/TerraNova/TerraNova.Common/obj/Debug/net472/TerraNova.Common.csproj.CoreCompileInputs.cache
+/run/media/philipp/Datengrab/philipp/workspace/Godot/TerraNova/TerraNova.Common/bin/Debug/net472/TerraNova.Common.dll
+/run/media/philipp/Datengrab/philipp/workspace/Godot/TerraNova/TerraNova.Common/bin/Debug/net472/TerraNova.Common.pdb
+/run/media/philipp/Datengrab/philipp/workspace/Godot/TerraNova/TerraNova.Common/obj/Debug/net472/TerraNova.Common.dll
+/run/media/philipp/Datengrab/philipp/workspace/Godot/TerraNova/TerraNova.Common/obj/Debug/net472/TerraNova.Common.pdb

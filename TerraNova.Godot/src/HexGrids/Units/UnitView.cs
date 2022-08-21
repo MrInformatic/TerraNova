@@ -3,15 +3,18 @@ using Godot;
 using TerraNova.Common;
 using TerraNova.Common.HexGrids.Units;
 using TerraNova.Godot.HexGrids.Coordinates;
+using TerraNova.Godot.HexGrids.Selectables;
 
 namespace TerraNova.Godot.HexGrids.Units
 {
     [View(typeof(Unit))]
-    public class UnitView : Spatial, IView
+    public class UnitView : Spatial, IView, ISelectable
     {
-        public Unit Unit { get { return (Unit)SimulationObject; } }
+        public Selector Selector { get; set; }
 
+        public Unit Unit { get { return (Unit)SimulationObject; } }
         public SimulationObject SimulationObject { get; set; }
+        public ViewManager ViewManager { get; set; }
 
         public override void _Process(float fDelta)
         {

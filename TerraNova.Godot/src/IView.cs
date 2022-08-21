@@ -6,5 +6,6 @@ namespace TerraNova.Godot
     public interface IView
     {
         SimulationObject SimulationObject { get; set; }
+        ViewManager ViewManager { get; set; }
     }
 }

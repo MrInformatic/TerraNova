@@ -12,6 +12,7 @@ namespace TerraNova.Godot
         public Simulation Simulation { get; } = new Simulation();
         public Dictionary<Type, PackedScene> pViewPrefabs { get; } = new Dictionary<Type, PackedScene>();
         public Dictionary<Guid, IView> pViews { get; } = new Dictionary<Guid, IView>();
+        public SimulationObject SelectedObject { get; set; }
 
         public override void _Ready()
         {
@@ -53,6 +54,7 @@ namespace TerraNova.Godot
                     {
                         var pView = pViewPrefab.Instance<IView>();
                         pView.SimulationObject = pSimulationObject;
+                        pView.ViewManager = this;
                         pViews[pSimulationObject.Guid] = pView;
                         AddChild((Node)pView);
                     }

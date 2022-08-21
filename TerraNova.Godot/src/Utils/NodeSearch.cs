@@ -14,12 +14,12 @@ namespace TerraNova.Godot.Utils
             }
         }
 
-        public static IEnumerable<T> GetParrentsOfType<T>(this Node pNode) where T : Node
+        public static IEnumerable<T> GetParrentsOfType<T>(this Node pNode)
         {
             return pNode.GetParrents().OfType<T>();
         }
 
-        public static bool TryGetParrentOfType<T>(this Node pNode, out T pValue) where T : Node
+        public static bool TryGetParrentOfType<T>(this Node pNode, out T pValue)
         {
             foreach (var pParrent in pNode.GetParrentsOfType<T>())
             {

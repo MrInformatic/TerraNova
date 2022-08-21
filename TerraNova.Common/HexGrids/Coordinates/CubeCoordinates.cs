@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
+using TerraNova.Common.Utils;
 
 namespace TerraNova.Common.HexGrids.Coordinates
 {
-    public struct CubeCoordinate
+    public struct CubeCoordinate : IEquatable<CubeCoordinate>
     {
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -66,6 +68,70 @@ namespace TerraNova.Common.HexGrids.Coordinates
                 Y = iY,
                 Z = iZ
             };
+        }
+
+        public int Distance(CubeCoordinate xOther)
+        {
+            return (Math.Abs(X - xOther.X) + Math.Abs(Y - xOther.Y) + Math.Abs(Z - xOther.Z)) / 2;
+        }
+
+        public IEnumerable<CubeCoordinate> Neighbours()
+        {
+            yield return new CubeCoordinate()
+            {
+                X = X + 1,
+                Y = Y - 1,
+                Z = Z
+            };
+
+            yield return new CubeCoordinate()
+            {
+                X = X - 1,
+                Y = Y + 1,
+                Z = Z
+            };
+
+            yield return new CubeCoordinate()
+            {
+                X = X + 1,
+                Y = Y,
+                Z = Z - 1
+            };
+
+            yield return new CubeCoordinate()
+            {
+                X = X - 1,
+                Y = Y,
+                Z = Z + 1
+            };
+
+            yield return new CubeCoordinate()
+            {
+                X = X,
+                Y = Y + 1,
+                Z = Z - 1
+            };
+
+            yield return new CubeCoordinate()
+            {
+                X = X,
+                Y = Y - 1,
+                Z = Z + 1
+            };
+        }
+
+        public bool Equals(CubeCoordinate xOther)
+        {
+            return X == xOther.X && Y == xOther.Y && Z == xOther.Z;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCodeBuilder.Create()
+                .Add(X)
+                .Add(Y)
+                .Add(Z)
+                .GetHashCode();
         }
     }
 }

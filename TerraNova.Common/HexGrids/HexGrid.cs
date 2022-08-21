@@ -1,5 +1,7 @@
 using TerraNova.Common.HexGrids.Tiles;
 using TerraNova.Common.HexGrids.Units;
+using TerraNova.Common.HexGrids.Coordinates;
+using TerraNova.Common.HexGrids.Paths;
 using System.Collections.Generic;
 using System;
 
@@ -83,6 +85,52 @@ namespace TerraNova.Common.HexGrids
             {
                 pTile.RemoveUnit(pUnit);
             }
+        }
+
+        public bool UnitPath(Unit pUnit, CubeCoordinate xDestination, ref List<CubeCoordinate> pPath)
+        {
+            var pOpenList = new CoordinateDistanceQueue();
+            var pClosedList = new Dictionary<CubeCoordinate, AStarCell>();
+            var pComparer = new ClosedListComparer(pClosedList);
+
+            pOpenList.Add(pUnit.Coordinate);
+
+            pPath.Clear();
+
+            while (pOpenList.TryPop(pComparer, out var xCurrent))
+            {
+                if (xCurrent.Equals(xDestination))
+                {
+                    pPath.Add(xCurrent);
+                    while (pClosedList.TryGetValue(xCurrent, out var xCell))
+                    {
+                        xCurrent = xCell.CameFrom;
+                        pPath.Add(xCurrent);
+                    }
+                    pPath.Reverse();
+
+                    return true;
+                }
+
+                foreach (var xNeighbour in xCurrent.Neighbours())
+                {
+                    var iDistanceFromStart = pClosedList[xCurrent].DistanceFromStart + 1;
+                    if (iDistanceFromStart < pClosedList[xNeighbour].DistanceFromStart)
+                    {
+                        pClosedList[xNeighbour] = new AStarCell(xCurrent, iDistanceFromStart, xNeighbour.Distance(xDestination));
+
+                        pOpenList.Add(xNeighbour);
+                    }
+
+                }
+            }
+
+            return false;
+        }
+
+        public void MoveUnit(Unit pUnit, CubeCoordinate xDestination)
+        {
+
         }
     }
 }

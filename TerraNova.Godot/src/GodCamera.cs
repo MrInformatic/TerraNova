@@ -4,7 +4,8 @@ namespace TerraNova.Godot
 {
     public class GodCamera : Camera
     {
-        public float Speed = 25f;
+        public float Speed { get; set; } = 25f;
+        public RayCast Raycast { get; private set; } = new RayCast();
 
         public override void _Process(float fDelta)
         {

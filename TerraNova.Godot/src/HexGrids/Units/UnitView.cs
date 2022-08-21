@@ -20,8 +20,9 @@ namespace TerraNova.Godot.HexGrids.Units
             if (pUnit != null)
             {
                 var xWorldCoordinates = pUnit.Coordinate.GetWorldCoordinates();
+                var pTile = pUnit.HexGrid.Map[pUnit.Coordinate.OffsetCoordinate];
 
-                this.Translation = new Vector3(xWorldCoordinates.x, 2f, xWorldCoordinates.y);
+                this.Translation = new Vector3(xWorldCoordinates.x, pTile.Height * 0.1f, xWorldCoordinates.y);
             }
         }
     }

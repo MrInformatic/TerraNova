@@ -3,3 +3,4 @@
 [ext_resource path="res://meshes/units/rover/SM_Rover.fbx" type="PackedScene" id=1]
 
 [node name="Manual_Rover_NoFuel" instance=ExtResource( 1 )]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )

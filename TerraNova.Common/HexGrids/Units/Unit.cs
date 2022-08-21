@@ -1,5 +1,6 @@
 
 using TerraNova.Common.HexGrids.Coordinates;
+using TerraNova.Common.HexGrids.Tiles;
 
 namespace TerraNova.Common.HexGrids.Units
 {

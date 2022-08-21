@@ -11,8 +11,13 @@ namespace TerraNova.Godot.HexGrids.Tiles
     public class TileView : Spatial, IView
     {
         public TileMesh TileMesh { get; set; }
+        public TileSelector TileSelector { get; set; }
+        public TileCollider TileCollider { get; set; }
+
         public Tile Tile { get { return (Tile)SimulationObject; } }
         public SimulationObject SimulationObject { get; set; }
+
+        public bool Selected { get; private set; }
 
         public override void _Process(float fDelta)
         {
@@ -23,6 +28,14 @@ namespace TerraNova.Godot.HexGrids.Tiles
                 var xWorldCoordinates = pTile.Coordinate.GetWorldCoordinates();
 
                 this.Translation = new Vector3(xWorldCoordinates.x, pTile.Height * 0.1f, xWorldCoordinates.y);
+            }
+        }
+
+        public void Input(InputEvent e)
+        {
+            if (e.IsActionPressed("select"))
+            {
+
             }
         }
     }

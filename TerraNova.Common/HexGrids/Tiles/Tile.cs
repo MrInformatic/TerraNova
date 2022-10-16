@@ -1,3 +1,4 @@
+using System;
 using TerraNova.Common.HexGrids.Coordinates;
 using TerraNova.Common.HexGrids.Units;
 
@@ -5,29 +6,44 @@ namespace TerraNova.Common.HexGrids.Tiles
 {
     public class Tile : SimulationObject
     {
-        public HexGrid HexGrid { get; }
+        public Guid HexGridId { get; }
+        public HexGrid HexGrid
+        {
+            get
+            {
+                return GetSimulationObject<HexGrid>(HexGridId);
+            }
+        }
+
         public int Height { get; }
         public CubeCoordinate Coordinate { get; }
 
-        public Unit Unit { get; private set; } = null;
-
-        public Tile(HexGrid pHexGrid, int iHeight, CubeCoordinate xCoordinate)
+        public Guid UnitId { get; private set; }
+        public Unit Unit
         {
-            HexGrid = pHexGrid;
+            get
+            {
+                return GetSimulationObject<Unit>(UnitId);
+            }
+        }
+
+        public Tile(Guid xHexGridId, int iHeight, CubeCoordinate xCoordinate)
+        {
+            HexGridId = xHexGridId;
             Height = iHeight;
             Coordinate = xCoordinate;
         }
 
-        protected override bool CanSpawn => HexGrid.CanAddTile(this);
+        protected override bool CanSpawn => HexGrid?.CanAddTile(this) ?? false;
 
         protected override void OnSpawn()
         {
-            HexGrid.AddTile(this);
+            HexGrid?.AddTile(this);
         }
 
         protected override void OnDeSpawn()
         {
-            HexGrid.RemoveTile(this);
+            HexGrid?.RemoveTile(this);
         }
 
         internal bool CanAddUnit(Unit pUnit)
@@ -37,17 +53,17 @@ namespace TerraNova.Common.HexGrids.Tiles
 
         internal void AddUnit(Unit pUnit)
         {
-            if (CanAddUnit(pUnit))
+            if (this.CanAddUnit(pUnit))
             {
-                Unit = pUnit;
+                UnitId = pUnit.Guid;
             }
         }
 
         internal void RemoveUnit(Unit pUnit)
         {
-            if (Unit != null && Unit == pUnit)
+            if (pUnit != null && pUnit.Guid != Guid.Empty && pUnit.Guid == UnitId)
             {
-                Unit = null;
+                UnitId = Guid.Empty;
             }
         }
     }

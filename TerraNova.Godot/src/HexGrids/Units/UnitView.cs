@@ -12,7 +12,7 @@ namespace TerraNova.Godot.HexGrids.Units
     {
         public Selector Selector { get; set; }
 
-        public Unit Unit { get { return (Unit)SimulationObject; } }
+        public Unit Unit => SimulationObject as Unit;
         public SimulationObject SimulationObject { get; set; }
         public ViewManager ViewManager { get; set; }
 
@@ -20,13 +20,21 @@ namespace TerraNova.Godot.HexGrids.Units
         {
             var pUnit = Unit;
 
-            if (pUnit != null)
+            if (pUnit == null || !pUnit.IsValid)
             {
-                var xWorldCoordinates = pUnit.Coordinate.GetWorldCoordinates();
-                var pTile = pUnit.HexGrid.Map[pUnit.Coordinate.OffsetCoordinate];
-
-                this.Translation = new Vector3(xWorldCoordinates.x, pTile.Height * 0.1f, xWorldCoordinates.y);
+                return;
             }
+
+            var pTile = pUnit.Tile;
+
+            if (pTile == null)
+            {
+                return;
+            }
+
+            var xWorldCoordinates = pTile.Coordinate.GetWorldCoordinates();
+
+            this.Translation = new Vector3(xWorldCoordinates.x, pTile.Height * 0.1f, xWorldCoordinates.y);
         }
     }
 }

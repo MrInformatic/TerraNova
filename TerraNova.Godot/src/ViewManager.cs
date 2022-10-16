@@ -9,7 +9,6 @@ namespace TerraNova.Godot
 {
     public class ViewManager : Node
     {
-        public Simulation Simulation { get; } = new Simulation();
         public Dictionary<Type, PackedScene> pViewPrefabs { get; } = new Dictionary<Type, PackedScene>();
         public Dictionary<Guid, IView> pViews { get; } = new Dictionary<Guid, IView>();
         public SimulationObject SelectedObject { get; set; }
@@ -45,7 +44,7 @@ namespace TerraNova.Godot
 
         public override void _Process(float delta)
         {
-            foreach (var pSimulationObject in Simulation.SimulationObjects.Values)
+            foreach (var pSimulationObject in Simulation.Instance.SimulationObjects.Values)
             {
                 if (!pViews.ContainsKey(pSimulationObject.Guid))
                 {

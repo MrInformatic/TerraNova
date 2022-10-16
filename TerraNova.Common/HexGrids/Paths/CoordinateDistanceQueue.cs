@@ -57,6 +57,11 @@ namespace TerraNova.Common.HexGrids.Paths
                 }
             }
 
+            if (bPop)
+            {
+                PriorityQueue.Remove(xCoordinate);
+            }
+
             return bPop;
         }
     }

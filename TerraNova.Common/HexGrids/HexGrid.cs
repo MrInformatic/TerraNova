@@ -7,93 +7,50 @@ using System;
 
 namespace TerraNova.Common.HexGrids
 {
-    public class HexGrid
+    public class HexGrid : SimulationObject
     {
-        public HexStorage<Tile> Map { get; }
-        public Simulation Simulation { get; }
+        public HexStorage<Guid> Map { get; }
 
-        public HexGrid(Simulation Simulation, int iWidth, int iHeight)
+        public HexGrid(int iWidth, int iHeight)
         {
-            Map = new HexStorage<Tile>(iWidth, iHeight);
-
-            foreach (var pSimulationObject in Simulation.SimulationObjects.Values)
-            {
-                if (pSimulationObject is Tile pTile)
-                {
-                    if (CanAddTile(pTile))
-                    {
-                        AddTile(pTile);
-                    }
-                    else
-                    {
-                        Simulation.DeSpawn(pTile);
-                    }
-                }
-
-                if (pSimulationObject is Unit pUnit)
-                {
-                    if (!CanAddUnit(pUnit))
-                    {
-                        Simulation.DeSpawn(pUnit);
-                    }
-                }
-            }
+            Map = new HexStorage<Guid>(iWidth, iHeight);
         }
 
         internal bool CanAddTile(Tile pTile)
         {
-            return pTile != null && Map[pTile.Coordinate.OffsetCoordinate] == null;
+            return pTile != null && GetSimulationObject<Tile>(Map[pTile.Coordinate.OffsetCoordinate]) == null;
         }
 
         internal void AddTile(Tile pTile)
         {
             if (CanAddTile(pTile))
             {
-                Map[pTile.Coordinate.OffsetCoordinate] = pTile;
+                Map[pTile.Coordinate.OffsetCoordinate] = pTile.Guid;
             }
         }
 
         internal void RemoveTile(Tile pTile)
         {
-            if (pTile != null && Map[pTile.Coordinate.OffsetCoordinate] != null)
+            if (pTile == null || pTile.Guid == Guid.Empty)
             {
-                Map[pTile.Coordinate.OffsetCoordinate] = null;
+                return;
+            }
+
+            var xCoordinate = pTile.Coordinate.OffsetCoordinate;
+            if (Map[xCoordinate] == pTile.Guid)
+            {
+                Map[xCoordinate] = Guid.Empty;
             }
         }
 
-        internal bool CanAddUnit(Unit pUnit)
-        {
-            var pTile = Map[pUnit.Coordinate.OffsetCoordinate];
-            return pTile != null && pTile.CanAddUnit(pUnit);
-        }
-
-        internal void AddUnit(Unit pUnit)
-        {
-            var pTile = Map[pUnit.Coordinate.OffsetCoordinate];
-
-            if (pTile != null && pTile.CanAddUnit(pUnit))
-            {
-                pTile.AddUnit(pUnit);
-            }
-        }
-
-        internal void RemoveUnit(Unit pUnit)
-        {
-            var pTile = Map[pUnit.Coordinate.OffsetCoordinate];
-
-            if (pTile != null)
-            {
-                pTile.RemoveUnit(pUnit);
-            }
-        }
-
-        public bool UnitPath(Unit pUnit, CubeCoordinate xDestination, ref List<CubeCoordinate> pPath)
+        public bool UnitPath(CubeCoordinate xStart, CubeCoordinate xDestination, ref List<CubeCoordinate> pPath)
         {
             var pOpenList = new CoordinateDistanceQueue();
             var pClosedList = new Dictionary<CubeCoordinate, AStarCell>();
             var pComparer = new ClosedListComparer(pClosedList);
 
-            pOpenList.Add(pUnit.Coordinate);
+            pOpenList.Add(xStart);
+            pClosedList.Add(xStart, AStarCell.CreateStartCell(xStart.Distance(xDestination)));
 
             pPath.Clear();
 
@@ -102,7 +59,7 @@ namespace TerraNova.Common.HexGrids
                 if (xCurrent.Equals(xDestination))
                 {
                     pPath.Add(xCurrent);
-                    while (pClosedList.TryGetValue(xCurrent, out var xCell))
+                    while (pClosedList.TryGetValue(xCurrent, out var xCell) && !xCell.StartCell)
                     {
                         xCurrent = xCell.CameFrom;
                         pPath.Add(xCurrent);
@@ -114,23 +71,49 @@ namespace TerraNova.Common.HexGrids
 
                 foreach (var xNeighbour in xCurrent.Neighbours())
                 {
-                    var iDistanceFromStart = pClosedList[xCurrent].DistanceFromStart + 1;
-                    if (iDistanceFromStart < pClosedList[xNeighbour].DistanceFromStart)
+                    var iDistanceFromStart = int.MaxValue;
+                    if (pClosedList.TryGetValue(xCurrent, out var xCurrentCell))
                     {
-                        pClosedList[xNeighbour] = new AStarCell(xCurrent, iDistanceFromStart, xNeighbour.Distance(xDestination));
-
-                        pOpenList.Add(xNeighbour);
+                        iDistanceFromStart = xCurrentCell.DistanceFromStart + 1;
                     }
 
+                    if (!pClosedList.TryGetValue(xNeighbour, out var xNeighbourCell) || iDistanceFromStart < xNeighbourCell.DistanceFromStart)
+                    {
+                        xNeighbourCell = AStarCell.CreateCell(xCurrent, iDistanceFromStart, xNeighbour.Distance(xDestination));
+                        pClosedList[xNeighbour] = xNeighbourCell;
+                        pOpenList.Add(xNeighbour);
+                    }
                 }
             }
 
             return false;
         }
 
-        public void MoveUnit(Unit pUnit, CubeCoordinate xDestination)
+        public bool MoveUnit(Unit pUnit, CubeCoordinate xDestination, ref List<CubeCoordinate> pPath)
         {
+            if (pUnit == null || !pUnit.IsValid)
+            {
+                return false;
+            }
 
+            var pStartTile = pUnit.Tile;
+
+            if (pStartTile == null || !this.UnitPath(pStartTile.Coordinate, xDestination, ref pPath) || pPath.Count == 0)
+            {
+                return false;
+            }
+
+            xDestination = pPath[pPath.Count - 1];
+            var pDestinationTile = GetSimulationObject(Map[xDestination.OffsetCoordinate]) as Tile;
+            if (!pDestinationTile.CanAddUnit(pUnit) && pUnit.CanTeleport(pDestinationTile))
+            {
+                return false;
+            }
+
+            pStartTile.RemoveUnit(pUnit);
+            pDestinationTile.AddUnit(pUnit);
+            pUnit.Teleport(pDestinationTile);
+            return true;
         }
     }
 }

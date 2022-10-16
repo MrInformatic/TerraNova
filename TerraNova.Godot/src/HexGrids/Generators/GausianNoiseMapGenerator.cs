@@ -37,8 +37,8 @@ namespace TerraNova.Godot.HexGrids.Generators
         {
             if (this.TryGetParrentOfType<GameRoot>(out var pGameRoot) && pGameRoot.ViewManager != null)
             {
-                var pSimulation = pGameRoot.ViewManager.Simulation;
-                var pHexGrid = new HexGrid(pSimulation, Width, Height);
+                var pHexGrid = new HexGrid(Width, Height);
+                pHexGrid.Spawn();
 
                 if (BaseNoise == null || BaseNoise.GetLength(0) != BaseWidth || BaseNoise.GetLength(1) != BaseHeight)
                 {
@@ -61,12 +61,12 @@ namespace TerraNova.Godot.HexGrids.Generators
                     {
                         var xCubeCoordinate = new OffsetCoordinate(iX, iY).CubeCoordinate;
 
-                        pSimulation.Spawn(new Tile(pHexGrid, (int)(HeightMultipier * Sample(xCubeCoordinate.GetWorldCoordinates() / NoiseScale)), xCubeCoordinate));
+                        new Tile(pHexGrid.Guid, (int)(HeightMultipier * Sample(xCubeCoordinate.GetWorldCoordinates() / NoiseScale)), xCubeCoordinate).Spawn();
                     }
                 }
 
-                var xStartUnitCoordinate = new OffsetCoordinate((int)(Random.NextDouble() * Width), (int)(Random.NextDouble() * Height)).CubeCoordinate;
-                pSimulation.Spawn(new Unit(pHexGrid, xStartUnitCoordinate, null, 10.0));
+                var xStartUnitCoordinate = new OffsetCoordinate((int)(Random.NextDouble() * Width), (int)(Random.NextDouble() * Height));
+                new Unit(pHexGrid.Map[xStartUnitCoordinate], null, 10.0).Spawn();
             }
         }
 

@@ -5,8 +5,9 @@ namespace TerraNova.Common
     public class SimulationObject
     {
         public Guid Guid { get; private set; } = Guid.Empty;
+        public bool IsValid => Guid != Guid.Empty;
 
-        public void Spawn(Simulation pSimulation)
+        public void Spawn()
         {
             if (Guid == Guid.Empty && CanSpawn)
             {
@@ -15,20 +16,20 @@ namespace TerraNova.Common
                 {
                     xGuid = Guid.NewGuid();
                 }
-                while (pSimulation.SimulationObjects.ContainsKey(xGuid));
+                while (Simulation.Instance.SimulationObjects.ContainsKey(xGuid));
 
                 Guid = xGuid;
-                pSimulation.SimulationObjects[xGuid] = this;
+                Simulation.Instance.SimulationObjects[xGuid] = this;
                 OnSpawn();
             }
         }
 
-        public void DeSpawn(Simulation pSimulation)
+        public void DeSpawn()
         {
             if (Guid != Guid.Empty)
             {
                 OnDeSpawn();
-                pSimulation.SimulationObjects.Remove(Guid);
+                Simulation.Instance.SimulationObjects.Remove(Guid);
                 Guid = Guid.Empty;
             }
         }
@@ -36,5 +37,20 @@ namespace TerraNova.Common
         protected virtual bool CanSpawn { get { return true; } }
         protected virtual void OnSpawn() { }
         protected virtual void OnDeSpawn() { }
+
+        public SimulationObject GetSimulationObject(Guid xGuid)
+        {
+            return Simulation.Instance.SimulationObjects.TryGetValue(xGuid, out var pSimualtionObject) ? pSimualtionObject : null;
+        }
+
+        public T GetSimulationObject<T>(Guid xGuid) where T : SimulationObject
+        {
+            return Simulation.Instance.SimulationObjects.TryGetValue(xGuid, out var pSimualtionObject) ? pSimualtionObject as T : null;
+        }
+
+        public bool ValidGuid(Guid xGuid)
+        {
+            return Simulation.Instance.SimulationObjects.ContainsKey(xGuid);
+        }
     }
 }

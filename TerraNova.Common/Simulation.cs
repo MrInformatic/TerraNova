@@ -6,21 +6,25 @@ namespace TerraNova.Common
 {
     public class Simulation
     {
+        public static readonly Simulation Instance = new Simulation();
+
         public Dictionary<Guid, SimulationObject> SimulationObjects { get; } = new Dictionary<Guid, SimulationObject>();
 
-        public void Spawn(SimulationObject pSimulationObject)
+        private Simulation() { }
+
+        public static void Spawn(SimulationObject pSimulationObject)
         {
-            pSimulationObject.Spawn(this);
+            pSimulationObject.Spawn();
         }
 
-        public void DeSpawn(SimulationObject pSimulationObject)
+        public static void DeSpawn(SimulationObject pSimulationObject)
         {
-            pSimulationObject.DeSpawn(this);
+            pSimulationObject.DeSpawn();
         }
 
-        public void DeSpawn(Guid xGuid)
+        public static void DeSpawn(Guid xGuid)
         {
-            SimulationObjects[xGuid].DeSpawn(this);
+            Instance.SimulationObjects[xGuid].DeSpawn();
         }
     }
 }
